@@ -7,19 +7,30 @@ function getItems() {
       //Crée un nouvel article pour chaque élément du tableau product
       //Ajoute les éléments des produits
       for (i = 0; i < product.length; i++) {
-        const newItem = document.createElement("a");
+        //Création du lien
+        let a = document.createElement("a");
+        a.href = `./product.html?id=${product[i]._id}`;
+        //Création de la balise article
+        let article = document.createElement("article");
+        a.appendChild(article);
+        //Création de la balise img
+        let img = document.createElement("img");
+        img.src = product[i].imageUrl;
+        img.alt = product[i].altTxt;
+        article.appendChild(img);
+        //Création du h3
+        let h3 = document.createElement("h3");
+        h3.classList.add("productName");
+        h3.textContent = product[i].name;
+        article.appendChild(h3);
+        //Création de la balise p 
+        let p = document.createElement("p");
+        p.classList.add("productDescription");
+        p.textContent = product[i].description;
+        article.appendChild(p);
+        //Attribution de a enfant de la balise section
         let parent = document.getElementById("items");
-        let newLink = parent.appendChild(newItem);
-
-        newLink.innerHTML = `
-        <a href="./product.html?id=${product[i]._id}">
-          <article>
-            <img src="${product[i].imageUrl}" alt="${product[i].altTxt}">
-            <h3 class="productName">${product[i].name}</h3>
-            <p class="productDescription">${product[i].description}</p>
-          </article>
-        </a>
-      `;
+        parent.appendChild(a); 
       }
     });
 }
