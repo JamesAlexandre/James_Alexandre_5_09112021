@@ -31,6 +31,8 @@ function getItems() {
         //Attribution de a enfant de la balise section
         let parent = document.getElementById("items");
         parent.appendChild(a); 
+
+        
       }
     });
 }
