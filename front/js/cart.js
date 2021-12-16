@@ -1,10 +1,13 @@
 const cartItems = document.getElementById("cart__items");
 
 let products = JSON.parse(localStorage.getItem("products"));
-let totalProducts = [];
-let totalPrice = [];
+let totalProducts = 0;
+let totalPrice = 0;
 
 for (let i = 0; i < products.length; i++) {
+  totalProducts += products[i].quantity;
+  totalPrice += products[i].price * products[i].quantity;
+
   let article = document.createElement("article");
   article.classList.add("cart__item");
   article.setAttribute("data-id", `${products[i].id}`);
@@ -51,6 +54,7 @@ for (let i = 0; i < products.length; i++) {
 
   let p3 = document.createElement("p");
   p3.textContent = `Qté : ${products[i].quantity}`;
+  p3.classList.add("quantity");
   divContentSettingsQuantity.appendChild(p3);
 
   let input = document.createElement("input");
@@ -60,6 +64,7 @@ for (let i = 0; i < products.length; i++) {
   input.min = "1";
   input.max = "100";
   input.value = products[i].quantity;
+  divContentSettingsQuantity.appendChild(input);
 
   let divContentSettingsDelete = document.createElement("div");
   divContentSettingsDelete.classList.add(
@@ -75,15 +80,183 @@ for (let i = 0; i < products.length; i++) {
 
 // Affichage de la quantité totale et du prix totale dans sur la page panier
 
-for (let i = 0; i < products.length; i++) {
-  totalProducts.push(parseInt(products[i].quantity));
-  totalPrice.push(parseInt(products[i].quantity) * parseInt(products[i].price));
-}
+// for (let i = 0; i < products.length; i++) {
+//   totalProducts.push(parseInt(products[i].quantity));
+//   totalPrice.push(parseInt(products[i].quantity) * parseInt(products[i].price));
+// }
 
-const reducer = (previousValue, currentValue) => previousValue + currentValue;
+// const reducer = (previousValue, currentValue) => previousValue + currentValue;
 
 let quantity = document.getElementById("totalQuantity");
-quantity.textContent = totalProducts.reduce(reducer);
+quantity.textContent = totalProducts;
 
 let price = document.getElementById("totalPrice");
-price.textContent = totalPrice.reduce(reducer);
+price.textContent = totalPrice;
+
+//Modification de la quantité
+let input = document.getElementsByClassName("itemQuantity");
+let result = document.getElementsByClassName("quantity");
+
+for (let i = 0; i < input.length; i++) {
+  input[i].addEventListener("change", (e) => {
+    result[i].textContent = `Qté : ${e.target.value}`;
+    let difference = parseInt(e.target.value) - parseInt(products[i].quantity);
+    products[i].quantity = parseInt(products[i].quantity) + difference;
+    totalProducts = parseInt(totalProducts) + difference;
+    quantity.textContent = totalProducts;
+    totalPrice += difference * products[i].price;
+    price.textContent = totalPrice;
+
+    localStorage.setItem("products", JSON.stringify(products));
+  });
+}
+
+// Supprimer produit
+let deleteButton = document.getElementsByClassName("deleteItem");
+
+for (let i = 0; i < deleteButton.length; i++) {
+  deleteButton[i].addEventListener("click", () => {
+    products.splice(i, 1);
+    localStorage.setItem("products", JSON.stringify(products));
+    location.reload();
+  });
+}
+
+const form = document.querySelector(".cart__order__form");
+const inputs = document.querySelectorAll(
+  'input[type="text"], input[type="email"]'
+);
+
+let firstName, lastName, address, city, email;
+
+const errorDisplay = (tag, message, valid) => {
+  const errorMsg = document.getElementById(`${tag}ErrorMsg`);
+
+  if (!valid) {
+    errorMsg.textContent = message;
+  } else {
+    errorMsg.textContent = message;
+  }
+};
+
+const firstNameChecker = (value) => {
+  if (value.length == 0) {
+    errorDisplay("firstName", "Veuillez entrer votre prénom");
+    firstName = null;
+  } else if (!value.match(/^[a-zA-Z]+(([',. -][a-zA-Z ])?[a-zA-Z]*)*$/g)) {
+    errorDisplay(
+      "firstName",
+      "Le prénom ne doit pas contenir de caractère spécial"
+    );
+    firstName = null;
+  } else {
+    errorDisplay("firstName", "", true);
+    firstName = value;
+  }
+};
+
+const lastNameChecker = (value) => {
+  if (value.length == 0) {
+    errorDisplay("lastName", "Veuillez entrer votre nom");
+    lastName = null;
+  } else if (!value.match(/^[a-zA-Z]+(([',. -][a-zA-Z ])?[a-zA-Z]*)*$/g)) {
+    errorDisplay(
+      "lastName",
+      "Le nom ne doit pas contenir de caractère spécial"
+    );
+    lastName = null;
+  } else {
+    errorDisplay("lastName", "", true);
+    lastName = value;
+  }
+};
+
+const addressChecker = (value) => {
+  if (value.length == 0) {
+    errorDisplay("address", "Veuillez entrer votre adresse");
+    address = null;
+  } else if (!value.match(/^[#.0-9a-zA-Z\s,-:]+$/)) {
+    errorDisplay(
+      "address",
+      "L'adresse ne doit pas contenir de caractère spécial"
+    );
+    address = null;
+  } else {
+    errorDisplay("address", "", true);
+    address = value;
+  }
+};
+
+const cityChecker = (value) => {
+  if (value.length == 0) {
+    errorDisplay("city", "Veuillez entrer votre ville");
+    city = null;
+  } else if (!value.match(/^[a-zA-Z]+(([',. -][a-zA-Z ])?[a-zA-Z]*)*$/g)) {
+    errorDisplay("city", "La ville ne doit pas contenir de caractère spécial");
+    city = null;
+  } else {
+    errorDisplay("city", "", true);
+    city = value;
+  }
+};
+
+const emailChecker = (value) => {
+  if (!value.match(/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i)) {
+    errorDisplay("email", "L'adresse mail n'est pas valide");
+    email = null;
+  } else {
+    errorDisplay("email", "", true);
+    email = value;
+  }
+};
+
+inputs.forEach((input) => {
+  input.addEventListener("input", (e) => {
+    switch (e.target.id) {
+      case "firstName":
+        firstNameChecker(e.target.value);
+        break;
+      case "lastName":
+        lastNameChecker(e.target.value);
+        break;
+      case "address":
+        addressChecker(e.target.value);
+        break;
+      case "city":
+        cityChecker(e.target.value);
+        break;
+      case "email":
+        emailChecker(e.target.value);
+        break;
+      default:
+        null;
+    }
+  });
+});
+
+form.addEventListener("submit", (e) => {
+  e.preventDefault();
+
+  if (firstName && lastName && address && city && email) {
+    const contact = {
+      firstName,
+      lastName,
+      address,
+      city,
+      email,
+    };
+    console.log(JSON.stringify(contact));
+    console.log(JSON.stringify(products));
+    fetch("http://localhost:3000/api/products/order", {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-type": "application/json",
+      },
+      body: JSON.stringify({
+        contact,
+        products,
+      }),
+    });
+  }
+});

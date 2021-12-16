@@ -37,3 +37,9 @@ function getItems() {
     });
 }
 getItems();
+
+let products = JSON.parse(localStorage.getItem("products"));
+for (let i = 0; i < products.length; i++) {
+  let panierButton = document.querySelector("nav a:nth-child(2)");
+  panierButton.innerHTML = `<a href="./cart.html"><li>Panier <span style="color: red; font-weight: bold;">${products.length}</span></li></a>`;
+}
