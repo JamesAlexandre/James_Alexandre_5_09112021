@@ -38,6 +38,7 @@ function getItems() {
 }
 getItems();
 
+//Affichage du nombre d'article sur le bouton panier
 let products = JSON.parse(localStorage.getItem("products"));
 for (let i = 0; i < products.length; i++) {
   let panierButton = document.querySelector("nav a:nth-child(2)");

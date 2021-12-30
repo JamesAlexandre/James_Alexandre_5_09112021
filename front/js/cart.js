@@ -1,12 +1,14 @@
+// Extraire l'id depuis l'URL
 let str = window.location.href;
 let url = new URL(str);
 let id = url.searchParams.get("id");
 
+//Si on trouve un id dans l'URL de la page...
 if (id) {
-  console.log("yes");
+  //...alors c'est la page confirmation, insérer l'id de commande sur la page
   let span = document.getElementById("orderId");
   span.textContent = id;
-} else {
+} else { // sinon on est sur la page panier alors jouer tout le script de la page 
   const cartItems = document.getElementById("cart__items");
 
   let products = JSON.parse(localStorage.getItem("products"));
@@ -14,9 +16,10 @@ if (id) {
   let totalPrice = 0;
 
   for (let i = 0; i < products.length; i++) {
-    totalProducts += products[i].quantity;
+    totalProducts += parseInt(products[i].quantity);
     totalPrice += products[i].price * products[i].quantity;
 
+    //Creation des éléments du DOM 
     let article = document.createElement("article");
     article.classList.add("cart__item");
     article.setAttribute("data-id", `${products[i].id}`);
@@ -112,7 +115,7 @@ if (id) {
     });
   }
 
-  // Supprimer produit
+  // Suppression du produit
   let deleteButton = document.getElementsByClassName("deleteItem");
 
   for (let i = 0; i < deleteButton.length; i++) {
@@ -122,7 +125,7 @@ if (id) {
       location.reload();
     });
   }
-
+//Mise en place du contrôle du formulaire à l'aide des RegEx
   const form = document.querySelector(".cart__order__form");
   const inputs = document.querySelectorAll(
     'input[type="text"], input[type="email"]'
@@ -238,11 +241,20 @@ if (id) {
     });
   });
 
+  //Requête POST au click sur le bouton commander
   form.addEventListener("submit", (e) => {
     e.preventDefault();
     let arrayId = [];
 
-    if (firstName && lastName && address && city && email) {
+    if (
+      firstName &&
+      lastName &&
+      address &&
+      city &&
+      email &&
+      products.length > 0
+    ) {
+      //objet contact contenant les inputs
       let contact = {
         firstName,
         lastName,
@@ -250,7 +262,7 @@ if (id) {
         city,
         email,
       };
-
+      //array contenant les id des produits achetés
       products.forEach((product) => {
         arrayId.push(product.id);
       });
@@ -268,9 +280,11 @@ if (id) {
       })
         .then((res) => res.json())
         .then((data) => {
-          localStorage.clear();
-          document.location.href = `./confirmation.html?id=${data.orderId}`;
+          localStorage.clear();//Vider le localstorage après la commande
+          document.location.href = `./confirmation.html?id=${data.orderId}`;//Renvoie à la page confirmation en insérant l'id de commande dans l'URL 
         });
+    } else {
+      alert("Sélectionnez un produit");
     }
   });
 }
