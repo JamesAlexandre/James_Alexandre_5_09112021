@@ -147,7 +147,7 @@ if (id) {
     if (value.length == 0) {
       errorDisplay("firstName", "Veuillez entrer votre prénom");
       firstName = null;
-    } else if (!value.match(/^[a-zA-Z]+(([',. -][a-zA-Z ])?[a-zA-Z]*)*$/g)) {
+    } else if (!value.match(/^[a-zA-Z /è/é/ç]+(([',. -][a-zA-Z /è/é/ç])?[a-zA-Z /è/é/ç]*)*$/g)) {
       errorDisplay(
         "firstName",
         "Le prénom ne doit pas contenir de caractère spécial"
@@ -163,7 +163,7 @@ if (id) {
     if (value.length == 0) {
       errorDisplay("lastName", "Veuillez entrer votre nom");
       lastName = null;
-    } else if (!value.match(/^[a-zA-Z]+(([',. -][a-zA-Z ])?[a-zA-Z]*)*$/g)) {
+    } else if (!value.match(/^[a-zA-Z /è/é/ç]+(([',. -][a-zA-Z /è/é/ç])?[a-zA-Z /è/é/ç]*)*$/g)) {
       errorDisplay(
         "lastName",
         "Le nom ne doit pas contenir de caractère spécial"
@@ -195,7 +195,7 @@ if (id) {
     if (value.length == 0) {
       errorDisplay("city", "Veuillez entrer votre ville");
       city = null;
-    } else if (!value.match(/^[a-zA-Z]+(([',. -][a-zA-Z ])?[a-zA-Z]*)*$/g)) {
+    } else if (!value.match(/^[a-zA-Z /è/é/ç]+(([',. -][a-zA-Z /è/é/ç])?[a-zA-Z /è/é/ç]*)*$/g)) {
       errorDisplay(
         "city",
         "La ville ne doit pas contenir de caractère spécial"
@@ -280,7 +280,8 @@ if (id) {
       })
         .then((res) => res.json())
         .then((data) => {
-          localStorage.clear();//Vider le localstorage après la commande
+          products = [];//Vider le localstorage après la commande
+          localStorage.setItem("products", JSON.stringify(products));
           document.location.href = `./confirmation.html?id=${data.orderId}`;//Renvoie à la page confirmation en insérant l'id de commande dans l'URL 
         });
     } else {
